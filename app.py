@@ -1,3 +1,4 @@
+import re
 import streamlit as st
 import autogen
 from markdown_pdf import MarkdownPdf, Section
@@ -155,21 +156,221 @@ def prev_stage():
 def jump_to_stage(stage):
     st.session_state.stage = stage
 
+# ---------------------------------------------------------------------------
+# Markdown table cleaner / renderer
+# ---------------------------------------------------------------------------
+def prepare_markdown_for_pdf(text: str) -> str:
+    """
+    Remove malformed markdown table fragments and render valid tables as DIVs.
+
+    LLMs sometimes emit empty pipe rows such as "| | | |" or orphan table
+    separator rows between sections.  PyMuPDF/markdown-pdf can render those as
+    visible blue table headers, even when they contain no text.
+
+    Even with clean markdown, PyMuPDF can repeat table backgrounds at page
+    breaks. To avoid that renderer bug entirely, valid markdown tables are
+    converted to DIV-based faux tables. No <table>, <tr>, <td>, <thead>, or
+    <th> elements are emitted on the PDF path.
+    """
+    def is_pipe_row(line: str) -> bool:
+        stripped = line.strip()
+        return stripped.startswith('|') and stripped.endswith('|') and len(stripped) > 2
+
+    def split_cells(line: str) -> list[str]:
+        stripped = line.strip()
+        return [c.strip() for c in stripped[1:-1].split('|')]
+
+    def is_empty_row(cells: list[str]) -> bool:
+        empty_values = {'', '&nbsp;', '&#160;'}
+        return all(c.lower() in empty_values for c in cells)
+
+    def is_separator_row(cells: list[str]) -> bool:
+        return bool(cells) and all(re.fullmatch(r':?-{3,}:?', c) for c in cells)
+
+    def escape_cell(value: str) -> str:
+        value = re.sub(r'<br\s*/?>', ' · ', value, flags=re.IGNORECASE)
+        value = value.replace('&', '&amp;')
+        value = value.replace('<', '&lt;')
+        value = value.replace('>', '&gt;')
+        value = re.sub(r'`([^`]+)`', r'<code>\1</code>', value)
+        value = re.sub(r'\*\*([^*]+)\*\*', r'<strong>\1</strong>', value)
+        value = re.sub(r'\*([^*]+)\*', r'<em>\1</em>', value)
+        return value
+
+    def render_div_table(header: list[str], body_rows: list[list[str]]) -> list[str]:
+        column_count = len(header)
+        html = [f'<div class="pdf-div-table pdf-div-cols-{column_count}">']
+        html.append(
+            '<div class="pdf-div-row pdf-div-header">'
+            + ''.join(
+                f'<div class="pdf-div-cell">{escape_cell(cell)}</div>'
+                for cell in header
+            )
+            + '</div>'
+        )
+        for row in body_rows:
+            padded_row = row[:column_count] + [''] * max(0, column_count - len(row))
+            html.append(
+                '<div class="pdf-div-row">'
+                + ''.join(
+                    f'<div class="pdf-div-cell">{escape_cell(cell)}</div>'
+                    for cell in padded_row
+                )
+                + '</div>'
+            )
+        html.append('</div>')
+        return html
+
+    def clean_table_block(block: list[str]) -> list[str]:
+        rows = []
+        for raw_line in block:
+            line = re.sub(r'<br\s*/?>', ' · ', raw_line, flags=re.IGNORECASE)
+            cells = split_cells(line)
+            if is_empty_row(cells):
+                continue
+            rows.append((line, cells, is_separator_row(cells)))
+
+        cleaned: list[str] = []
+        separator_seen = False
+        for line, _cells, is_separator in rows:
+            if is_separator:
+                # Keep only the first valid markdown table delimiter:
+                # a divider immediately following a non-empty header row.
+                if cleaned and not separator_seen and is_pipe_row(cleaned[-1]):
+                    cleaned.append(line)
+                    separator_seen = True
+                continue
+            cleaned.append(line)
+
+        if len(cleaned) >= 2:
+            header = split_cells(cleaned[0])
+            separator = split_cells(cleaned[1])
+            if is_separator_row(separator):
+                body_rows = [split_cells(row) for row in cleaned[2:]]
+                return render_div_table(header, body_rows)
+
+        return cleaned
+
+    lines = text.splitlines()
+    result: list[str] = []
+    i = 0
+    while i < len(lines):
+        if is_pipe_row(lines[i]):
+            block: list[str] = []
+            while i < len(lines) and is_pipe_row(lines[i]):
+                block.append(lines[i])
+                i += 1
+            result.extend(clean_table_block(block))
+            continue
+
+        result.append(lines[i])
+        i += 1
+    return '\n'.join(result)
+
+
+def protect_signature(text: str) -> str:
+    """
+    Wrap the closing signature block in an HTML div with page-break-inside:avoid
+    so that "Prepared by" and "Date" are never split across two pages.
+
+    The signature is expected to look like:
+        Prepared by: Home Energy Advisor ...
+        Date: ...
+    """
+    sig_re = re.compile(
+        r'(Prepared by:.*?\n(?:Date:.*?)?)\s*$',
+        re.DOTALL | re.IGNORECASE,
+    )
+    m = sig_re.search(text)
+    if m:
+        sig = m.group(1).strip()
+        replacement = (
+            '\n\n<div style="page-break-inside:avoid; margin-top:24pt;">\n\n'
+            + sig
+            + '\n\n</div>\n'
+        )
+        text = text[:m.start()] + replacement
+    return text
+
+
+# ---------------------------------------------------------------------------
+# Noto Sans font helpers
+# Noto Sans is Google's universal Unicode font – it covers virtually all
+# Unicode code points including the emoji-adjacent symbols the LLM generates.
+# ---------------------------------------------------------------------------
+_FONT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".fonts")
+_NOTO_URLS = {
+    "NotoSans-Regular.ttf": (
+        "https://raw.githubusercontent.com/googlefonts/noto-fonts/main"
+        "/hinted/ttf/NotoSans/NotoSans-Regular.ttf"
+    ),
+    "NotoSans-Bold.ttf": (
+        "https://raw.githubusercontent.com/googlefonts/noto-fonts/main"
+        "/hinted/ttf/NotoSans/NotoSans-Bold.ttf"
+    ),
+}
+
+
+def get_noto_fonts() -> dict[str, str]:
+    """Download Noto Sans fonts (once) and return a {variant: absolute_path} dict."""
+    import urllib.request
+
+    os.makedirs(_FONT_DIR, exist_ok=True)
+    paths: dict[str, str] = {}
+    for filename, url in _NOTO_URLS.items():
+        dest = os.path.join(_FONT_DIR, filename)
+        if not os.path.exists(dest):
+            try:
+                urllib.request.urlretrieve(url, dest)
+            except Exception:
+                dest = ""  # fall back to system fonts silently
+        if dest and os.path.exists(dest):
+            paths[filename] = dest
+    return paths
+
+
 def generate_pdf(text):
-    css = """
+    font_paths = get_noto_fonts()
+    # Build @font-face rules if we successfully downloaded the fonts
+    font_face_css = ""
+    body_font = "'Helvetica', 'Arial', sans-serif"
+    if font_paths:
+        regular = font_paths.get("NotoSans-Regular.ttf", "")
+        bold    = font_paths.get("NotoSans-Bold.ttf", "")
+        if regular:
+            font_face_css += (
+                f"@font-face {{"
+                f"  font-family: 'NotoSans';"
+                f"  font-weight: normal;"
+                f"  src: url('{regular}');"
+                f"}}\n"
+            )
+        if bold:
+            font_face_css += (
+                f"@font-face {{"
+                f"  font-family: 'NotoSans';"
+                f"  font-weight: bold;"
+                f"  src: url('{bold}');"
+                f"}}\n"
+            )
+        if regular:
+            body_font = "'NotoSans', 'Arial Unicode MS', sans-serif"
+    text = prepare_markdown_for_pdf(text)
+    text = protect_signature(text)
+    css = font_face_css + """
     @page {
         size: letter;
         margin: 20mm 15mm;
     }
     body {
-        font-family: 'Helvetica', 'Arial', sans-serif;
+        font-family: """ + body_font + """;
         color: #334155;
         line-height: 1.5;
         font-size: 11pt;
     }
     h1, h2, h3, h4, h5, h6 {
         color: #1e3a8a;
-        font-family: 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
+        font-family: """ + body_font + """;
         margin-top: 20px;
         margin-bottom: 10px;
         font-weight: bold;
@@ -191,27 +392,63 @@ def generate_pdf(text):
         margin-top: 0;
         margin-bottom: 15px;
     }
-    table {
-        border-collapse: collapse;
+    .pdf-div-table {
+        display: table;
+        table-layout: fixed;
         width: 100%;
         margin-top: 15px;
         margin-bottom: 25px;
         font-size: 9.5pt;
         page-break-inside: avoid;
         break-inside: avoid;
+        border: 1px solid #cbd5e1;
     }
-    th {
-        color: #ffffff;
-        font-weight: bold;
-        text-align: left;
-        padding: 8px 10px;
-        border-top: 1px solid #cbd5e1;
-        border-bottom: 2px solid #1e3a8a;
+    .pdf-div-row {
+        display: table-row;
+        width: 100%;
     }
-    td {
-        padding: 8px 10px;
+    .pdf-div-cell {
+        box-sizing: border-box;
+        display: table-cell;
+        padding: 9px 12px;
         border-bottom: 1px solid #e2e8f0;
+        border-right: 1px solid #e2e8f0;
         vertical-align: top;
+        font-size: 9.5pt;
+        line-height: 1.35;
+    }
+    .pdf-div-row:last-child .pdf-div-cell {
+        border-bottom: 0;
+    }
+    .pdf-div-row .pdf-div-cell:last-child {
+        border-right: 0;
+    }
+    .pdf-div-header {
+        background-color: #f1f5f9;
+        color: #1e3a8a;
+        font-weight: bold;
+        border-bottom: 2px solid #cbd5e1;
+    }
+    .pdf-div-header .pdf-div-cell {
+        padding: 10px 12px;
+        border-right-color: #cbd5e1;
+    }
+    .pdf-div-cols-2 .pdf-div-cell {
+        width: 50%;
+    }
+    .pdf-div-cols-3 .pdf-div-cell {
+        width: 33.333333%;
+    }
+    .pdf-div-cols-4 .pdf-div-cell {
+        width: 25%;
+    }
+    .pdf-div-cols-5 .pdf-div-cell {
+        width: 20%;
+    }
+    table, thead, tbody, tr, th, td {
+        background-color: transparent;
+        color: inherit;
+        border-color: #cbd5e1;
     }
     ul, ol {
         margin-top: 0;
@@ -252,7 +489,6 @@ def generate_pdf(text):
     }
     """
     pdf = MarkdownPdf(toc_level=0)
-    # Emojis are supported out-of-the-box by PyMuPDF html rendering!
     pdf.add_section(Section(text, toc=False), user_css=css)
     
     # Save to temp file
@@ -274,6 +510,7 @@ def call_llm_autogen(user_data):
     prompt += "\nEnsure the report is structured in clean Markdown. " \
               "Do not wrap the entire report in code blocks or markdown code blocks (e.g. ```markdown). " \
               "Use standard markdown tables without any nested HTML tags (like <br>). " \
+              "Do not use empty markdown table rows, blank pipe rows, or table-like rows as spacing between sections. " \
               "Ensure the report ends exactly with the following signature block:\n\n" \
               "Prepared by: Home Energy Advisor – Clean Start Team\n" \
               f"Date: {current_date}\n"
@@ -298,7 +535,8 @@ def call_llm_autogen(user_data):
         "long and detailed but not too long, highly actionable, and accurate advice. Please format the " \
         "response in clean, standard Markdown. Do not wrap your response in outer markdown code blocks " \
         "like ```markdown or other code wrappers. Use clean markdown tables, headers, and bulleted lists. " \
-        "Avoid raw HTML tags. Do not add horizontal lines. Ensure the text is fully readable and " \
+        "Avoid raw HTML tags. Do not add horizontal lines. Do not use empty pipe rows or table-like " \
+        "rows for spacing. Ensure the text is fully readable and " \
         "renders perfectly in a PDF report."
     )
 
