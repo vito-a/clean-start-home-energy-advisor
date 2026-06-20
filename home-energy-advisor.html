@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,10 +13,12 @@
             --background: #f8fafc;
             --foreground: #0f172a;
             --card: #ffffff;
-            --primary: #059669; /* Eco Emerald Primary Accent */
+            --primary: #059669;
+            /* Eco Emerald Primary Accent */
             --primary-hover: #047857;
             --primary-light: #ecfdf5;
-            --secondary: #6366f1; /* Premium Indigo Secondary */
+            --secondary: #6366f1;
+            /* Premium Indigo Secondary */
             --muted: #64748b;
             --muted-light: #f1f5f9;
             --border: #e2e8f0;
@@ -38,23 +41,41 @@
         }
 
         .app-header {
-            text-align: center;
-            padding: 40px 20px 20px;
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            padding: 32px 40px 20px;
+            max-width: 680px;
+            margin: 0 auto;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .app-header-logo {
+            width: 160px;
+            height: 125px;
+            object-fit: contain;
+            border-radius: 12px;
+            flex-shrink: 0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.10);
+        }
+
+        .app-header-text {
+            flex: 1;
         }
 
         .app-header h1 {
             font-size: 2rem;
             font-weight: 700;
             letter-spacing: -0.025em;
-            margin-bottom: 8px;
+            margin: 0 0 4px 0;
             color: var(--foreground);
         }
 
         .app-header p {
             color: var(--muted);
             font-size: 1rem;
-            max-width: 500px;
-            margin: 0 auto;
+            margin: 0;
         }
 
         .container {
@@ -228,7 +249,7 @@
             transform: translateY(-1px);
         }
 
-        .option-input:checked + .option-label {
+        .option-input:checked+.option-label {
             border-color: var(--primary);
             background: var(--primary-light);
             color: var(--primary-hover);
@@ -329,8 +350,13 @@
         }
 
         @keyframes rotateSpin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
         }
 
         /* Markdown Document Content Presenter */
@@ -339,7 +365,9 @@
             color: #334155;
         }
 
-        .markdown-doc h1, .markdown-doc h2, .markdown-doc h3 {
+        .markdown-doc h1,
+        .markdown-doc h2,
+        .markdown-doc h3 {
             color: var(--foreground);
             font-weight: 700;
             margin-top: 1.5em;
@@ -358,7 +386,8 @@
             font-size: 0.9rem;
         }
 
-        .markdown-doc th, .markdown-doc td {
+        .markdown-doc th,
+        .markdown-doc td {
             border: 1px solid var(--border);
             padding: 12px 14px;
             text-align: left;
@@ -369,7 +398,8 @@
             font-weight: 600;
         }
 
-        .markdown-doc ul, .markdown-doc ol {
+        .markdown-doc ul,
+        .markdown-doc ol {
             padding-left: 24px;
         }
 
@@ -378,451 +408,460 @@
         }
     </style>
 </head>
+
 <body>
 
-<div class="app-header">
-    <h1>Clean Start</h1>
-    <h2>Home Energy Advisor</h2>
-    <p>Empowering you with confidence on your custom journey toward renewable home energy solutions.</p>
-</div>
-
-<div class="container">
-    
-    <div class="config-card">
-        <div class="config-header" onclick="toggleConfigPanel()">
-            <span>⚙️ LLM API Connection Settings</span>
-            <span id="config-indicator">➕ Expand</span>
-        </div>
-        <div id="configFields" class="config-body">
-            <div class="input-group">
-                <label for="apiUrl">API Base URL</label>
-                <input type="text" id="apiUrl" value="http://127.0.0.1:1234/v1">
-            </div>
-            <div class="input-group">
-                <label for="apiKey">API Authorization Key</label>
-                <input type="password" id="apiKey" value="lm-studio">
-            </div>
-            <div class="input-group span-2">
-                <label for="apiModel">Active Model Identification Identifier</label>
-                <input type="text" id="apiModel" value="nvidia/nemotron-3-nano-4b">
-            </div>
+    <div class="app-header">
+        <img src="clean_start_logo.jpg" alt="Clean Start Logo" class="app-header-logo">
+        <div class="app-header-text">
+            <h1>Clean Start</h1>
+            <h2 style="font-size:1.1rem;font-weight:600;margin:0 0 4px 0;color:var(--muted);">Home Energy Advisor</h2>
+            <p>Empowering you with confidence on your custom journey toward renewable home energy solutions.</p>
         </div>
     </div>
 
-    <div class="wizard-card">
-        
-        <div id="screen-interactive" class="app-screen active">
-            <div class="progress-wrapper">
-                <div class="progress-meta">
-                    <span id="progress-step-text">Step 1 of 5</span>
-                    <span id="progress-percent-text">20%</span>
+    <div class="container">
+
+        <div class="config-card">
+            <div class="config-header" onclick="toggleConfigPanel()">
+                <span>⚙️ LLM API Connection Settings</span>
+                <span id="config-indicator">➕ Expand</span>
+            </div>
+            <div id="configFields" class="config-body">
+                <div class="input-group">
+                    <label for="apiUrl">API Base URL</label>
+                    <input type="text" id="apiUrl" value="http://127.0.0.1:1234/v1">
                 </div>
-                <div class="progress-bar">
-                    <div id="progress-indicator-fill" class="progress-fill"></div>
+                <div class="input-group">
+                    <label for="apiKey">API Authorization Key</label>
+                    <input type="password" id="apiKey" value="lm-studio">
+                </div>
+                <div class="input-group span-2">
+                    <label for="apiModel">Active Model Identification Identifier</label>
+                    <input type="text" id="apiModel" value="nvidia/nemotron-3-nano-4b">
+                </div>
+            </div>
+        </div>
+
+        <div class="wizard-card">
+
+            <div id="screen-interactive" class="app-screen active">
+                <div class="progress-wrapper">
+                    <div class="progress-meta">
+                        <span id="progress-step-text">Step 1 of 5</span>
+                        <span id="progress-percent-text">20%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div id="progress-indicator-fill" class="progress-fill"></div>
+                    </div>
+                </div>
+
+                <h2 id="display-question" class="question-title">Loading initial assessment question...</h2>
+                <div id="display-options" class="options-list"></div>
+
+                <div class="actions-row">
+                    <button id="nav-back" class="btn btn-secondary" onclick="stepBack()" style="visibility: hidden;">⬅️
+                        Back</button>
+                    <button id="nav-next" class="btn btn-primary" onclick="stepForward()">Next ➡️</button>
                 </div>
             </div>
 
-            <h2 id="display-question" class="question-title">Loading initial assessment question...</h2>
-            <div id="display-options" class="options-list"></div>
-
-            <div class="actions-row">
-                <button id="nav-back" class="btn btn-secondary" onclick="stepBack()" style="visibility: hidden;">⬅️ Back</button>
-                <button id="nav-next" class="btn btn-primary" onclick="stepForward()">Next ➡️</button>
+            <div id="screen-loading" class="app-screen">
+                <div class="loader-layout">
+                    <div class="spinner"></div>
+                    <h3 style="margin: 0 0 8px 0; font-size: 1.25rem;">Analyzing Parameters...</h3>
+                    <p style="color: var(--muted); margin: 0; font-size: 0.95rem;">Building your personal recommendation
+                        report using the configured AI endpoint.</p>
+                </div>
             </div>
-        </div>
 
-        <div id="screen-loading" class="app-screen">
-            <div class="loader-layout">
-                <div class="spinner"></div>
-                <h3 style="margin: 0 0 8px 0; font-size: 1.25rem;">Analyzing Parameters...</h3>
-                <p style="color: var(--muted); margin: 0; font-size: 0.95rem;">Building your personal recommendation report using the configured AI endpoint.</p>
+            <div id="screen-results" class="app-screen">
+                <h2
+                    style="font-size: 1.5rem; font-weight: 700; margin-top: 0; margin-bottom: 24px; display: flex; align-items: center; gap: 8px;">
+                    📋 Your Advisor Report</h2>
+                <div id="markdown-render-target" class="markdown-doc"></div>
+
+                <div class="actions-row"
+                    style="border-top: 1px solid var(--border); padding-top: 24px; margin-top: 32px;">
+                    <button class="btn btn-secondary" onclick="resetWizardApp()">🔄 Start Over</button>
+                    <button class="btn btn-primary" onclick="triggerReportDownload()">📥 Download HTML Report</button>
+                </div>
             </div>
-        </div>
 
-        <div id="screen-results" class="app-screen">
-            <h2 style="font-size: 1.5rem; font-weight: 700; margin-top: 0; margin-bottom: 24px; display: flex; align-items: center; gap: 8px;">📋 Your Advisor Report</h2>
-            <div id="markdown-render-target" class="markdown-doc"></div>
-            
-            <div class="actions-row" style="border-top: 1px solid var(--border); padding-top: 24px; margin-top: 32px;">
-                <button class="btn btn-secondary" onclick="resetWizardApp()">🔄 Start Over</button>
-                <button class="btn btn-primary" onclick="triggerReportDownload()">📥 Download HTML Report</button>
-            </div>
         </div>
-
     </div>
-</div>
 
-<script>
-    // Completely enriched execution tree with cohesive thematic Unicode indicators everywhere
-    const TREE_MATRIX = {
-        "☀️ Solar Panels": {
-            "stage2": {
-                "question": "🎯 What is your main clean energy goal?",
-                "options": [
-                    "💰 Lower my electricity bills",
-                    "🌱 Reduce my environmental impact",
-                    "🔋 Add backup power and energy independence",
-                    "🤔 I'm just exploring my options"
-                ]
+    <script>
+        // Completely enriched execution tree with cohesive thematic Unicode indicators everywhere
+        const TREE_MATRIX = {
+            "☀️ Solar Panels": {
+                "stage2": {
+                    "question": "🎯 What is your main clean energy goal?",
+                    "options": [
+                        "💰 Lower my electricity bills",
+                        "🌱 Reduce my environmental impact",
+                        "🔋 Add backup power and energy independence",
+                        "🤔 I'm just exploring my options"
+                    ]
+                },
+                "stage3": {
+                    "question": "🏠 Which structural setup best describes your home?",
+                    "options": [
+                        "🏡 I own a single-family home",
+                        "🏢 I own a townhouse or duplex",
+                        "🏙️ I live in a condo or HOA community",
+                        "🤷 I'm not sure what options are available for my home"
+                    ]
+                },
+                "stage4": {
+                    "question": "🔍 What would you like help with next?",
+                    "options": [
+                        "📊 Understanding costs and expected savings",
+                        "📐 Checking if my roof structure is suitable",
+                        "🏷️ Learning about local incentives and tax credits",
+                        "🛠️ Seeing the exact structural steps to install solar"
+                    ]
+                }
             },
-            "stage3": {
-                "question": "🏠 Which structural setup best describes your home?",
-                "options": [
-                    "🏡 I own a single-family home",
-                    "🏢 I own a townhouse or duplex",
-                    "🏙️ I live in a condo or HOA community",
-                    "🤷 I'm not sure what options are available for my home"
-                ]
+            "🌡️ Heat Pumps": {
+                "stage2": {
+                    "question": "📈 What are you hoping to improve with a heat pump?",
+                    "options": [
+                        "📉 Lower household heating and cooling costs",
+                        "🔄 Replace an aging, inefficient HVAC system",
+                        "🛋️ Make my home internal spaces more comfortable",
+                        "🍃 Reduce fossil fuel use and lower emissions"
+                    ]
+                },
+                "stage3": {
+                    "question": "🔥 Which best describes your current heating system?",
+                    "options": [
+                        "💨 Natural gas furnace architecture",
+                        "⚡ Standard electric heating elements",
+                        "🛢️ Oil or propane heating setups",
+                        "🤷 I'm honestly not completely sure"
+                    ]
+                },
+                "stage4": {
+                    "question": "💡 What system insights would help you most next?",
+                    "options": [
+                        "🌍 Is a modern heat pump right for my specific climate?",
+                        "💰 Estimated complete installation baseline costs",
+                        "🎁 Available localized rebates and financial incentives",
+                        "🔧 Understanding the different types of heat pump variants"
+                    ]
+                }
             },
-            "stage4": {
-                "question": "🔍 What would you like help with next?",
-                "options": [
-                    "📊 Understanding costs and expected savings",
-                    "📐 Checking if my roof structure is suitable",
-                    "🏷️ Learning about local incentives and tax credits",
-                    "🛠️ Seeing the exact structural steps to install solar"
-                ]
+            "🏡 Home Efficiency Upgrades": {
+                "stage2": {
+                    "question": "⚠️ Which structural problem area concerns you most?",
+                    "options": [
+                        "💸 Experiencing unusually high utility bills",
+                        "🥵🥶 Rooms that consistently feel too hot or too cold",
+                        "💨 Noticeable draft spots and poor insulation layers",
+                        "🔍 I don't know where my home wastes the most energy"
+                    ]
+                },
+                "stage3": {
+                    "question": "🛠️ Which specific upgrade structural track interests you most?",
+                    "options": [
+                        "🪵 Installing better high-R value insulation",
+                        "🚪 Executing air sealing and weatherization paths",
+                        "🪟 Upgrading to new energy-efficient windows and doors",
+                        "📋 Booking a professional comprehensive home energy assessment"
+                    ]
+                },
+                "stage4": {
+                    "question": "📋 What educational information would you like to learn next?",
+                    "options": [
+                        "💰 Which unique upgrades provide the biggest financial savings",
+                        "⏳ Typical upfront investment costs and exact payback timeline",
+                        "🏦 Available utility rebates and state financial assistance",
+                        "🗺️ A recommended order of engineering improvements"
+                    ]
+                }
+            },
+            "🚗 Electric Vehicle & Home Charging": {
+                "stage2": {
+                    "question": "⚡ What best describes your situation with electric vehicles?",
+                    "options": [
+                        "🚗 I'm thinking about buying or leasing my first EV",
+                        "🚘 I already own or lease an EV model",
+                        "🔌 I need to install a dedicated home charging outlet",
+                        "⚖️ I'm comparing long-term EV ownership with gasoline vehicles"
+                    ]
+                },
+                "stage3": {
+                    "question": "📍 Where would you usually charge your vehicle?",
+                    "options": [
+                        "🏡 Primarily at home overnight",
+                        "🏢 At my workplace regular parking setup",
+                        "⛽ Utilizing local public charging stations",
+                        "🤷 I'm not entirely sure of my pattern yet"
+                    ]
+                },
+                "stage4": {
+                    "question": "❓ What infrastructure information would help you most?",
+                    "options": [
+                        "🛠️ Dedicated options for installing a fast home charger",
+                        "📊 Exact charging electric grid costs and consumption patterns",
+                        "🎁 Localized incentive programs for purchasing EVs and chargers",
+                        "⚡ Checking whether my home's electrical panel system is ready"
+                    ]
+                }
             }
-        },
-        "🌡️ Heat Pumps": {
-            "stage2": {
-                "question": "📈 What are you hoping to improve with a heat pump?",
-                "options": [
-                    "📉 Lower household heating and cooling costs",
-                    "🔄 Replace an aging, inefficient HVAC system",
-                    "🛋️ Make my home internal spaces more comfortable",
-                    "🍃 Reduce fossil fuel use and lower emissions"
-                ]
-            },
-            "stage3": {
-                "question": "🔥 Which best describes your current heating system?",
-                "options": [
-                    "💨 Natural gas furnace architecture",
-                    "⚡ Standard electric heating elements",
-                    "🛢️ Oil or propane heating setups",
-                    "🤷 I'm honestly not completely sure"
-                ]
-            },
-            "stage4": {
-                "question": "💡 What system insights would help you most next?",
-                "options": [
-                    "🌍 Is a modern heat pump right for my specific climate?",
-                    "💰 Estimated complete installation baseline costs",
-                    "🎁 Available localized rebates and financial incentives",
-                    "🔧 Understanding the different types of heat pump variants"
-                ]
-            }
-        },
-        "🏡 Home Efficiency Upgrades": {
-            "stage2": {
-                "question": "⚠️ Which structural problem area concerns you most?",
-                "options": [
-                    "💸 Experiencing unusually high utility bills",
-                    "🥵🥶 Rooms that consistently feel too hot or too cold",
-                    "💨 Noticeable draft spots and poor insulation layers",
-                    "🔍 I don't know where my home wastes the most energy"
-                ]
-            },
-            "stage3": {
-                "question": "🛠️ Which specific upgrade structural track interests you most?",
-                "options": [
-                    "🪵 Installing better high-R value insulation",
-                    "🚪 Executing air sealing and weatherization paths",
-                    "🪟 Upgrading to new energy-efficient windows and doors",
-                    "📋 Booking a professional comprehensive home energy assessment"
-                ]
-            },
-            "stage4": {
-                "question": "📋 What educational information would you like to learn next?",
-                "options": [
-                    "💰 Which unique upgrades provide the biggest financial savings",
-                    "⏳ Typical upfront investment costs and exact payback timeline",
-                    "🏦 Available utility rebates and state financial assistance",
-                    "🗺️ A recommended order of engineering improvements"
-                ]
-            }
-        },
-        "🚗 Electric Vehicle & Home Charging": {
-            "stage2": {
-                "question": "⚡ What best describes your situation with electric vehicles?",
-                "options": [
-                    "🚗 I'm thinking about buying or leasing my first EV",
-                    "🚘 I already own or lease an EV model",
-                    "🔌 I need to install a dedicated home charging outlet",
-                    "⚖️ I'm comparing long-term EV ownership with gasoline vehicles"
-                ]
-            },
-            "stage3": {
-                "question": "📍 Where would you usually charge your vehicle?",
-                "options": [
-                    "🏡 Primarily at home overnight",
-                    "🏢 At my workplace regular parking setup",
-                    "⛽ Utilizing local public charging stations",
-                    "🤷 I'm not entirely sure of my pattern yet"
-                ]
-            },
-            "stage4": {
-                "question": "❓ What infrastructure information would help you most?",
-                "options": [
-                    "🛠️ Dedicated options for installing a fast home charger",
-                    "📊 Exact charging electric grid costs and consumption patterns",
-                    "🎁 Localized incentive programs for purchasing EVs and chargers",
-                    "⚡ Checking whether my home's electrical panel system is ready"
-                ]
-            }
-        }
-    };
+        };
 
-    const S5_QUESTION = "🎁 What specialized package outline would you like to receive?";
-    const S5_OPTIONS = [
-        "📋 A comprehensive personalized clean energy action plan",
-        "💵 Estimated project costs and active localized incentives",
-        "📈 Potential environmental energy metrics and bill reductions",
-        "🧑‍🔧 Recommended clear next steps and vetted public resources"
-    ];
+        const S5_QUESTION = "🎁 What specialized package outline would you like to receive?";
+        const S5_OPTIONS = [
+            "📋 A comprehensive personalized clean energy action plan",
+            "💵 Estimated project costs and active localized incentives",
+            "📈 Potential environmental energy metrics and bill reductions",
+            "🧑‍🔧 Recommended clear next steps and vetted public resources"
+        ];
 
-    // State Variables
-    let currentStage = 1;
-    let wizardChoices = {};
-    let cachedMarkdownResponse = "";
+        // State Variables
+        let currentStage = 1;
+        let wizardChoices = {};
+        let cachedMarkdownResponse = "";
 
-    function toggleConfigPanel() {
-        const body = document.getElementById('configFields');
-        const indicator = document.getElementById('config-indicator');
-        body.classList.toggle('open');
-        if(body.classList.contains('open')) {
-            indicator.textContent = "➖ Collapse";
-        } else {
-            indicator.textContent = "➕ Expand";
-        }
-    }
-
-    function syncVisualProgress() {
-        const fill = document.getElementById('progress-indicator-fill');
-        const textStep = document.getElementById('progress-step-text');
-        const textPct = document.getElementById('progress-percent-text');
-        
-        let visualStep = Math.floor(currentStage);
-        if(currentStage === 1.5) visualStep = 1; // map textual extension to anchor step
-        
-        const computePct = visualStep * 20;
-        fill.style.width = `${computePct}%`;
-        textStep.textContent = `Step ${visualStep} of 5`;
-        textPct.textContent = `${computePct}%`;
-    }
-
-    // Dynamic Engine UI Generator
-    function renderWizardState() {
-        const qTitle = document.getElementById('display-question');
-        const optionsArea = document.getElementById('display-options');
-        const btnBack = document.getElementById('nav-back');
-        const btnNext = document.getElementById('nav-next');
-
-        optionsArea.innerHTML = "";
-        btnBack.style.visibility = currentStage === 1 ? "hidden" : "visible";
-        btnNext.textContent = currentStage === 5 ? "✨ Generate Advisor Report" : "Next ➡️";
-        
-        syncVisualProgress();
-
-        if (currentStage === 1) {
-            qTitle.textContent = "☀️ Stage 1: What technology area are you most interested in improving?";
-            const selectionPool = [...Object.keys(TREE_MATRIX), "🤔❓ Other Options / Custom Focus"];
-            selectionPool.forEach((item, index) => createRadioComponent(optionsArea, "stage1", item, index));
-        } 
-        else if (currentStage === 1.5) {
-            qTitle.textContent = "📝 Stage 1: Define Your Custom Target Interest Area";
-            const textarea = document.createElement('textarea');
-            textarea.id = "custom-input-box";
-            textarea.placeholder = "Please explain what specific clean energy transition solutions or home challenges you want analyzed by the advisor system...";
-            textarea.value = wizardChoices["Custom Interest Details"] || "";
-            optionsArea.appendChild(textarea);
-        } 
-        else if (currentStage >= 2 && currentStage <= 4) {
-            const indexAnchor = wizardChoices["Core Track Selection"];
-            const structuralKey = `stage${currentStage}`;
-            const targetNode = TREE_MATRIX[indexAnchor][structuralKey];
-
-            qTitle.textContent = `Stage ${currentStage}: ${targetNode.question}`;
-            targetNode.options.forEach((item, index) => createRadioComponent(optionsArea, structuralKey, item, index));
-        } 
-        else if (currentStage === 5) {
-            qTitle.textContent = `Stage 5: ${S5_QUESTION}`;
-            S5_OPTIONS.forEach((item, index) => createRadioComponent(optionsArea, "stage5", item, index));
-        }
-    }
-
-    function createRadioComponent(targetParent, inputScopeName, displayStringValue, sequentialIndex) {
-        const wrapperId = `rad_${inputScopeName}_${sequentialIndex}`;
-        
-        const inputElement = document.createElement('input');
-        inputElement.type = "radio";
-        inputElement.name = inputScopeName;
-        inputElement.value = displayStringValue;
-        inputElement.id = wrapperId;
-        inputElement.className = "option-input";
-
-        // Restore past values gracefully or default select first item
-        if (wizardChoices[inputScopeName] === displayStringValue || (currentStage === 1 && wizardChoices["Core Track Selection"] === displayStringValue)) {
-            inputElement.checked = true;
-        } else if (!wizardChoices[inputScopeName] && sequentialIndex === 0) {
-            inputElement.checked = true;
-        }
-
-        const labelElement = document.createElement('label');
-        labelElement.htmlFor = wrapperId;
-        labelElement.className = "option-label";
-        labelElement.textContent = displayStringValue;
-
-        targetParent.appendChild(inputElement);
-        targetParent.appendChild(labelElement);
-    }
-
-    function stepForward() {
-        if (currentStage === 1) {
-            const pick = document.querySelector('input[name="stage1"]:checked').value;
-            wizardChoices["Core Track Selection"] = pick;
-            if (pick === "🤔❓ Other Options / Custom Focus") {
-                currentStage = 1.5;
+        function toggleConfigPanel() {
+            const body = document.getElementById('configFields');
+            const indicator = document.getElementById('config-indicator');
+            body.classList.toggle('open');
+            if (body.classList.contains('open')) {
+                indicator.textContent = "➖ Collapse";
             } else {
-                currentStage = 2;
+                indicator.textContent = "➕ Expand";
             }
-        } 
-        else if (currentStage === 1.5) {
-            const inputVal = document.getElementById('custom-input-box').value.trim();
-            if (!inputVal) {
-                alert("Please add some descriptive context before continuing.");
+        }
+
+        function syncVisualProgress() {
+            const fill = document.getElementById('progress-indicator-fill');
+            const textStep = document.getElementById('progress-step-text');
+            const textPct = document.getElementById('progress-percent-text');
+
+            let visualStep = Math.floor(currentStage);
+            if (currentStage === 1.5) visualStep = 1; // map textual extension to anchor step
+
+            const computePct = visualStep * 20;
+            fill.style.width = `${computePct}%`;
+            textStep.textContent = `Step ${visualStep} of 5`;
+            textPct.textContent = `${computePct}%`;
+        }
+
+        // Dynamic Engine UI Generator
+        function renderWizardState() {
+            const qTitle = document.getElementById('display-question');
+            const optionsArea = document.getElementById('display-options');
+            const btnBack = document.getElementById('nav-back');
+            const btnNext = document.getElementById('nav-next');
+
+            optionsArea.innerHTML = "";
+            btnBack.style.visibility = currentStage === 1 ? "hidden" : "visible";
+            btnNext.textContent = currentStage === 5 ? "✨ Generate Advisor Report" : "Next ➡️";
+
+            syncVisualProgress();
+
+            if (currentStage === 1) {
+                qTitle.textContent = "☀️ Stage 1: What technology area are you most interested in improving?";
+                const selectionPool = [...Object.keys(TREE_MATRIX), "🤔❓ Other Options / Custom Focus"];
+                selectionPool.forEach((item, index) => createRadioComponent(optionsArea, "stage1", item, index));
+            }
+            else if (currentStage === 1.5) {
+                qTitle.textContent = "📝 Stage 1: Define Your Custom Target Interest Area";
+                const textarea = document.createElement('textarea');
+                textarea.id = "custom-input-box";
+                textarea.placeholder = "Please explain what specific clean energy transition solutions or home challenges you want analyzed by the advisor system...";
+                textarea.value = wizardChoices["Custom Interest Details"] || "";
+                optionsArea.appendChild(textarea);
+            }
+            else if (currentStage >= 2 && currentStage <= 4) {
+                const indexAnchor = wizardChoices["Core Track Selection"];
+                const structuralKey = `stage${currentStage}`;
+                const targetNode = TREE_MATRIX[indexAnchor][structuralKey];
+
+                qTitle.textContent = `Stage ${currentStage}: ${targetNode.question}`;
+                targetNode.options.forEach((item, index) => createRadioComponent(optionsArea, structuralKey, item, index));
+            }
+            else if (currentStage === 5) {
+                qTitle.textContent = `Stage 5: ${S5_QUESTION}`;
+                S5_OPTIONS.forEach((item, index) => createRadioComponent(optionsArea, "stage5", item, index));
+            }
+        }
+
+        function createRadioComponent(targetParent, inputScopeName, displayStringValue, sequentialIndex) {
+            const wrapperId = `rad_${inputScopeName}_${sequentialIndex}`;
+
+            const inputElement = document.createElement('input');
+            inputElement.type = "radio";
+            inputElement.name = inputScopeName;
+            inputElement.value = displayStringValue;
+            inputElement.id = wrapperId;
+            inputElement.className = "option-input";
+
+            // Restore past values gracefully or default select first item
+            if (wizardChoices[inputScopeName] === displayStringValue || (currentStage === 1 && wizardChoices["Core Track Selection"] === displayStringValue)) {
+                inputElement.checked = true;
+            } else if (!wizardChoices[inputScopeName] && sequentialIndex === 0) {
+                inputElement.checked = true;
+            }
+
+            const labelElement = document.createElement('label');
+            labelElement.htmlFor = wrapperId;
+            labelElement.className = "option-label";
+            labelElement.textContent = displayStringValue;
+
+            targetParent.appendChild(inputElement);
+            targetParent.appendChild(labelElement);
+        }
+
+        function stepForward() {
+            if (currentStage === 1) {
+                const pick = document.querySelector('input[name="stage1"]:checked').value;
+                wizardChoices["Core Track Selection"] = pick;
+                if (pick === "🤔❓ Other Options / Custom Focus") {
+                    currentStage = 1.5;
+                } else {
+                    currentStage = 2;
+                }
+            }
+            else if (currentStage === 1.5) {
+                const inputVal = document.getElementById('custom-input-box').value.trim();
+                if (!inputVal) {
+                    alert("Please add some descriptive context before continuing.");
+                    return;
+                }
+                wizardChoices["Custom Interest Details"] = inputVal;
+                currentStage = 5;
+            }
+            else if (currentStage >= 2 && currentStage <= 4) {
+                const structuralKey = `stage${currentStage}`;
+                const pick = document.querySelector(`input[name="${structuralKey}"]:checked`).value;
+                const currentRouteTrack = wizardChoices["Core Track Selection"];
+                const rawQuestionString = TREE_MATRIX[currentRouteTrack][structuralKey].question;
+
+                wizardChoices[rawQuestionString] = pick; // human-readable payload logging
+                wizardChoices[structuralKey] = pick;       // system sequence evaluation tracking
+                currentStage++;
+            }
+            else if (currentStage === 5) {
+                wizardChoices["Target Report Outcome Deliverable"] = document.querySelector('input[name="stage5"]:checked').value;
+                executePipelineQuery();
                 return;
             }
-            wizardChoices["Custom Interest Details"] = inputVal;
-            currentStage = 5;
-        } 
-        else if (currentStage >= 2 && currentStage <= 4) {
-            const structuralKey = `stage${currentStage}`;
-            const pick = document.querySelector(`input[name="${structuralKey}"]:checked`).value;
-            const currentRouteTrack = wizardChoices["Core Track Selection"];
-            const rawQuestionString = TREE_MATRIX[currentRouteTrack][structuralKey].question;
-
-            wizardChoices[rawQuestionString] = pick; // human-readable payload logging
-            wizardChoices[structuralKey] = pick;       // system sequence evaluation tracking
-            currentStage++;
-        } 
-        else if (currentStage === 5) {
-            wizardChoices["Target Report Outcome Deliverable"] = document.querySelector('input[name="stage5"]:checked').value;
-            executePipelineQuery();
-            return;
+            renderWizardState();
         }
-        renderWizardState();
-    }
 
-    function stepBack() {
-        if (currentStage === 1.5 || currentStage === 2) {
-            currentStage = 1;
-        } else if (currentStage === 5 && wizardChoices["Core Track Selection"] === "🤔❓ Other Options / Custom Focus") {
-            currentStage = 1.5;
-        } else {
-            currentStage--;
+        function stepBack() {
+            if (currentStage === 1.5 || currentStage === 2) {
+                currentStage = 1;
+            } else if (currentStage === 5 && wizardChoices["Core Track Selection"] === "🤔❓ Other Options / Custom Focus") {
+                currentStage = 1.5;
+            } else {
+                currentStage--;
+            }
+            renderWizardState();
         }
-        renderWizardState();
-    }
 
-    // Dynamic API Orchestration Engine with Auto-Path & CORS Sanitization
-    async function executePipelineQuery() {
-        document.getElementById('screen-interactive').classList.remove('active');
-        document.getElementById('screen-loading').classList.add('active');
+        // Dynamic API Orchestration Engine with Auto-Path & CORS Sanitization
+        async function executePipelineQuery() {
+            document.getElementById('screen-interactive').classList.remove('active');
+            document.getElementById('screen-loading').classList.add('active');
 
-        const systemTimeOptions = { day: 'numeric', month: 'long', year: 'numeric' };
-        const calculatedDateStamp = new Date().toLocaleDateString('en-GB', systemTimeOptions);
+            const systemTimeOptions = { day: 'numeric', month: 'long', year: 'numeric' };
+            const calculatedDateStamp = new Date().toLocaleDateString('en-GB', systemTimeOptions);
 
-        let dataContextAggregationString = "User has completed a home energy assessment questionnaire layout with following metrics:\n\n";
-        for (const [keyDataLabel, mappedValueStr] of Object.entries(wizardChoices)) {
-            // Filter out internal application control keys from clean user report injection
-            if (!["stage2", "stage3", "stage4", "stage5", "Core Track Selection", "Target Report Outcome Deliverable"].includes(keyDataLabel)) {
-                dataContextAggregationString += `- ${keyDataLabel}: ${mappedValueStr}\n`;
+            let dataContextAggregationString = "User has completed a home energy assessment questionnaire layout with following metrics:\n\n";
+            for (const [keyDataLabel, mappedValueStr] of Object.entries(wizardChoices)) {
+                // Filter out internal application control keys from clean user report injection
+                if (!["stage2", "stage3", "stage4", "stage5", "Core Track Selection", "Target Report Outcome Deliverable"].includes(keyDataLabel)) {
+                    dataContextAggregationString += `- ${keyDataLabel}: ${mappedValueStr}\n`;
+                }
+            }
+
+            dataContextAggregationString += "\nPlease engineer an extensive, informative, and deeply personalized evaluation document structure following standard clean Markdown configurations.";
+            dataContextAggregationString += "\nStrict Markdown Parameters:\n" +
+                "1. Output plain Markdown structures. Never encapsulate your entire response payload inside outer markdown text markers (e.g. ```markdown).\n" +
+                "2. Render technical projections or metric estimates within standard structural Markdown tables.\n" +
+                "3. Do not apply raw HTML elements (like <br>) within structural components or create empty spacer table blocks.\n" +
+                "4. The output final line must match exactly this signature pattern ending block:\n\n" +
+                "Prepared by: Home Energy Advisor – Clean Start Team\n" +
+                `Date: ${calculatedDateStamp}\n`;
+
+            const dynamicSystemDirective = "You are a professional grade senior home engineering consultant agent tracking alternative energy migrations. " +
+                "Render clean, accurate, and completely scannable alternative systems suggestions matching the specified dimensions. Ensure full cross-rendering reliability inside downstream Markdown parsers.";
+
+            // --- URL Sanitization & Normalization Engine ---
+            let baseUrl = document.getElementById('apiUrl').value.trim();
+            baseUrl = baseUrl.replace(/\/+$/, ""); // Strip out any accidental trailing slashes
+
+            let finalEndpoint = baseUrl;
+            if (!baseUrl.endsWith("/chat/completions")) {
+                finalEndpoint = baseUrl + "/chat/completions";
+            }
+
+            const targetKey = document.getElementById('apiKey').value.trim();
+            const targetModel = document.getElementById('apiModel').value.trim();
+
+            // Standardized Chat Payload Object Structure
+            const chatPayload = {
+                model: targetModel,
+                messages: [
+                    { role: "system", content: dynamicSystemDirective },
+                    { role: "user", content: dataContextAggregationString }
+                ],
+                temperature: 0.65
+            };
+
+            // --- Intelligent Headers (CORS Preflight Bypass) ---
+            const requestHeaders = {
+                "Content-Type": "application/json"
+            };
+
+            // Only append Authorization if it is NOT the local LM Studio default. 
+            // This prevents LM Studio from rejecting the OPTIONS preflight due to unknown auth headers.
+            if (targetKey && targetKey !== "lm-studio" && !baseUrl.includes("127.0.0.1") && !baseUrl.includes("localhost")) {
+                requestHeaders["Authorization"] = `Bearer ${targetKey}`;
+            }
+
+            try {
+                const rawFetchStream = await fetch(finalEndpoint, {
+                    method: "POST",
+                    mode: "cors", // Explicitly state CORS expectations
+                    headers: requestHeaders,
+                    body: JSON.stringify(chatPayload)
+                });
+
+                if (!rawFetchStream.ok) {
+                    const textErr = await rawFetchStream.text();
+                    throw new Error(`HTTP Error Status ${rawFetchStream.status}: ${textErr}`);
+                }
+
+                const compiledPayloadJson = await rawFetchStream.json();
+
+                if (!compiledPayloadJson.choices || compiledPayloadJson.choices.length === 0) {
+                    throw new Error("The API responded successfully but skipped returning structural message completion choices.");
+                }
+
+                cachedMarkdownResponse = compiledPayloadJson.choices[0].message.content;
+
+                document.getElementById('markdown-render-target').innerHTML = marked.parse(cachedMarkdownResponse);
+
+                document.getElementById('screen-loading').classList.remove('active');
+                document.getElementById('screen-results').classList.add('active');
+
+            } catch (execException) {
+                console.error("Critical Connection Failure Trace Logs:", execException);
+                alert(`Failed to properly communicate with model interface: ${execException.message}\n\nPlease check your browser's Developer Console (F12) for exact network debug arrays.`);
+                document.getElementById('screen-loading').classList.remove('active');
+                document.getElementById('screen-interactive').classList.add('active');
             }
         }
 
-        dataContextAggregationString += "\nPlease engineer an extensive, informative, and deeply personalized evaluation document structure following standard clean Markdown configurations.";
-        dataContextAggregationString += "\nStrict Markdown Parameters:\n" +
-            "1. Output plain Markdown structures. Never encapsulate your entire response payload inside outer markdown text markers (e.g. ```markdown).\n" +
-            "2. Render technical projections or metric estimates within standard structural Markdown tables.\n" +
-            "3. Do not apply raw HTML elements (like <br>) within structural components or create empty spacer table blocks.\n" +
-            "4. The output final line must match exactly this signature pattern ending block:\n\n" +
-            "Prepared by: Home Energy Advisor – Clean Start Team\n" +
-            `Date: ${calculatedDateStamp}\n`;
-
-        const dynamicSystemDirective = "You are a professional grade senior home engineering consultant agent tracking alternative energy migrations. " +
-            "Render clean, accurate, and completely scannable alternative systems suggestions matching the specified dimensions. Ensure full cross-rendering reliability inside downstream Markdown parsers.";
-
-        // --- URL Sanitization & Normalization Engine ---
-        let baseUrl = document.getElementById('apiUrl').value.trim();
-        baseUrl = baseUrl.replace(/\/+$/, ""); // Strip out any accidental trailing slashes
-        
-        let finalEndpoint = baseUrl;
-        if (!baseUrl.endsWith("/chat/completions")) {
-            finalEndpoint = baseUrl + "/chat/completions";
-        }
-
-        const targetKey = document.getElementById('apiKey').value.trim();
-        const targetModel = document.getElementById('apiModel').value.trim();
-
-        // Standardized Chat Payload Object Structure
-        const chatPayload = {
-            model: targetModel,
-            messages: [
-                { role: "system", content: dynamicSystemDirective },
-                { role: "user", content: dataContextAggregationString }
-            ],
-            temperature: 0.65
-        };
-
-        // --- Intelligent Headers (CORS Preflight Bypass) ---
-        const requestHeaders = {
-            "Content-Type": "application/json"
-        };
-        
-        // Only append Authorization if it is NOT the local LM Studio default. 
-        // This prevents LM Studio from rejecting the OPTIONS preflight due to unknown auth headers.
-        if (targetKey && targetKey !== "lm-studio" && !baseUrl.includes("127.0.0.1") && !baseUrl.includes("localhost")) {
-            requestHeaders["Authorization"] = `Bearer ${targetKey}`;
-        }
-
-        try {
-            const rawFetchStream = await fetch(finalEndpoint, {
-                method: "POST",
-                mode: "cors", // Explicitly state CORS expectations
-                headers: requestHeaders,
-                body: JSON.stringify(chatPayload)
-            });
-
-            if (!rawFetchStream.ok) {
-                const textErr = await rawFetchStream.text();
-                throw new Error(`HTTP Error Status ${rawFetchStream.status}: ${textErr}`);
-            }
-            
-            const compiledPayloadJson = await rawFetchStream.json();
-            
-            if (!compiledPayloadJson.choices || compiledPayloadJson.choices.length === 0) {
-                throw new Error("The API responded successfully but skipped returning structural message completion choices.");
-            }
-
-            cachedMarkdownResponse = compiledPayloadJson.choices[0].message.content;
-
-            document.getElementById('markdown-render-target').innerHTML = marked.parse(cachedMarkdownResponse);
-            
-            document.getElementById('screen-loading').classList.remove('active');
-            document.getElementById('screen-results').classList.add('active');
-
-        } catch (execException) {
-            console.error("Critical Connection Failure Trace Logs:", execException);
-            alert(`Failed to properly communicate with model interface: ${execException.message}\n\nPlease check your browser's Developer Console (F12) for exact network debug arrays.`);
-            document.getElementById('screen-loading').classList.remove('active');
-            document.getElementById('screen-interactive').classList.add('active');
-        }
-    }
-
-    // Dynamic Runtime Export Pipeline Block
-    function triggerReportDownload() {
-        const formattedDocumentFrame = `<!DOCTYPE html>
+        // Dynamic Runtime Export Pipeline Block
+        function triggerReportDownload() {
+            const formattedDocumentFrame = `<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -862,27 +901,28 @@
 </body>
 </html>`;
 
-        const dynamicBlobPayload = new Blob([formattedDocumentFrame], { type: 'text/html' });
-        const temporaryLinkAnchor = document.createElement('a');
-        temporaryLinkAnchor.href = URL.createObjectURL(dynamicBlobPayload);
-        temporaryLinkAnchor.download = "Clean_Start_Energy_Advisor_Report.html";
-        document.body.appendChild(temporaryLinkAnchor);
-        temporaryLinkAnchor.click();
-        document.body.removeChild(temporaryLinkAnchor);
-    }
+            const dynamicBlobPayload = new Blob([formattedDocumentFrame], { type: 'text/html' });
+            const temporaryLinkAnchor = document.createElement('a');
+            temporaryLinkAnchor.href = URL.createObjectURL(dynamicBlobPayload);
+            temporaryLinkAnchor.download = "Clean_Start_Energy_Advisor_Report.html";
+            document.body.appendChild(temporaryLinkAnchor);
+            temporaryLinkAnchor.click();
+            document.body.removeChild(temporaryLinkAnchor);
+        }
 
-    function resetWizardApp() {
-        currentStage = 1;
-        wizardChoices = {};
-        cachedMarkdownResponse = "";
-        document.getElementById('screen-results').classList.remove('active');
-        document.getElementById('screen-interactive').classList.add('active');
+        function resetWizardApp() {
+            currentStage = 1;
+            wizardChoices = {};
+            cachedMarkdownResponse = "";
+            document.getElementById('screen-results').classList.remove('active');
+            document.getElementById('screen-interactive').classList.add('active');
+            renderWizardState();
+        }
+
+        // Initialize layout processing on boot
         renderWizardState();
-    }
-
-    // Initialize layout processing on boot
-    renderWizardState();
-</script>
+    </script>
 
 </body>
+
 </html>
